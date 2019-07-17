@@ -1,11 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should render <GiftedChat/> and compare with snapshot 1`] = `
-<View
-  onLayout={[Function]}
-  style={
+<ActionSheet
+  messages={
+    Array [
+      Object {
+        "_id": 1,
+        "createdAt": 1563391506006,
+        "text": "Hello developer",
+        "user": Object {
+          "_id": 2,
+          "name": "React Native",
+        },
+      },
+    ]
+  }
+  onSend={[Function]}
+  user={
     Object {
-      "flex": 1,
+      "_id": 1,
     }
   }
 />

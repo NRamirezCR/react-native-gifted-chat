@@ -36,7 +36,7 @@ export interface ComposerProps {
   onInputSizeChanged?(contentSize: { width: number; height: number }): void
 }
 
-export default class Composer extends React.Component<ComposerProps> {
+export default class Composer extends React.PureComponent<ComposerProps> {
   static defaultProps = {
     composerHeight: MIN_COMPOSER_HEIGHT,
     text: '',

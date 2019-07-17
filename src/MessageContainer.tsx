@@ -15,7 +15,7 @@ import {
 import LoadEarlier from './LoadEarlier'
 import Message from './Message'
 import Color from './Color'
-import { User, IMessage } from './types'
+import { IMessage } from './types'
 
 const styles = StyleSheet.create({
   container: {
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
 
 export interface MessageContainerProps<TMessage extends IMessage> {
   messages?: TMessage[]
-  user?: User
   listViewProps: Partial<ListViewProps>
   inverted?: boolean
   loadEarlier?: boolean
@@ -66,6 +65,7 @@ export interface MessageContainerProps<TMessage extends IMessage> {
   invertibleScrollViewProps?: any
   extraData?: any
   scrollToBottomOffset?: number
+  messageProps: Partial<Message['props']>
   renderFooter?(props: MessageContainerProps<TMessage>): React.ReactNode
   renderMessage?(props: Message['props']): React.ReactNode
   renderLoadEarlier?(props: LoadEarlier['props']): React.ReactNode
@@ -81,7 +81,6 @@ export default class MessageContainer<
 > {
   static defaultProps = {
     messages: [],
-    user: {},
     renderFooter: null,
     renderMessage: null,
     onLoadEarlier: () => {},
@@ -92,12 +91,11 @@ export default class MessageContainer<
     extraData: null,
     scrollToBottom: false,
     scrollToBottomOffset: 200,
-    alignTop: false,
+    alignTop: false
   }
 
   static propTypes = {
     messages: PropTypes.arrayOf(PropTypes.object),
-    user: PropTypes.object,
     renderFooter: PropTypes.func,
     renderMessage: PropTypes.func,
     renderLoadEarlier: PropTypes.func,
@@ -111,6 +109,7 @@ export default class MessageContainer<
     scrollToBottomOffset: PropTypes.number,
     scrollToBottomComponent: PropTypes.func,
     alignTop: PropTypes.bool,
+    messageProps: PropTypes.shape(Message.propTypes)
   }
 
   state = {
@@ -240,25 +239,23 @@ export default class MessageContainer<
       }
       item.user = { _id: 0 }
     }
-    const { messages, user, ...restProps } = this.props
-    if (messages && user) {
+    const { messages, messageProps } = this.props
+    if (messages && messageProps.user) {
       const previousMessage = messages[index + 1] || {}
       const nextMessage = messages[index - 1] || {}
-
-      const messageProps: Message['props'] = {
-        ...restProps,
-        user,
+      const mergedProps: Message['props'] = {
         key: item._id,
+        ...messageProps,
         currentMessage: item,
         previousMessage,
         nextMessage,
-        position: item.user._id === user._id ? 'right' : 'left',
+        position: item.user._id === messageProps.user._id ? 'right' : 'left',
       }
 
       if (this.props.renderMessage) {
-        return this.props.renderMessage(messageProps)
+        return this.props.renderMessage(mergedProps)
       }
-      return <Message {...messageProps} />
+      return <Message {...mergedProps} />
     }
     return null
   }
@@ -277,19 +274,6 @@ export default class MessageContainer<
     return <Text>V</Text>
   }
 
-  renderScrollToBottomWrapper() {
-    return (
-      <View style={styles.scrollToBottomStyle}>
-        <TouchableOpacity
-          onPress={this.scrollToBottom}
-          hitSlop={{ top: 5, left: 5, right: 5, bottom: 5 }}
-        >
-          {this.renderScrollBottomComponent()}
-        </TouchableOpacity>
-      </View>
-    )
-  }
-
   keyExtractor = (item: TMessage) => `${item._id}`
 
   render() {
@@ -306,8 +290,16 @@ export default class MessageContainer<
         }
       >
         {this.state.showScrollBottom && this.props.scrollToBottom
-          ? this.renderScrollToBottomWrapper()
-          : null}
+          ? (
+            <View style={styles.scrollToBottomStyle}>
+              <TouchableOpacity
+                onPress={this.scrollToBottom}
+                hitSlop={{ top: 5, left: 5, right: 5, bottom: 5 }}
+              >
+                {this.renderScrollBottomComponent()}
+              </TouchableOpacity>
+            </View>
+          ) : null}
         <FlatList
           ref={this.flatListRef}
           extraData={this.props.extraData}

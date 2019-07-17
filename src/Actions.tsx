@@ -22,7 +22,7 @@ export interface ActionsProps {
   onPressActionButton?(): void
 }
 
-export default class Actions extends React.Component<ActionsProps> {
+export default class Actions extends React.PureComponent<ActionsProps> {
   static defaultProps: ActionsProps = {
     options: {},
     optionTintColor: Color.optionTintColor,
@@ -80,7 +80,7 @@ export default class Actions extends React.Component<ActionsProps> {
     return (
       <TouchableOpacity
         style={[styles.container, this.props.containerStyle]}
-        onPress={this.props.onPressActionButton || this.onActionsPress}
+        onPress={this.onActionsPress}
       >
         {this.renderIcon()}
       </TouchableOpacity>

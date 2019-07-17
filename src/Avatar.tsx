@@ -58,7 +58,7 @@ export interface AvatarProps<TMessage extends IMessage> {
 
 export default class Avatar<
   TMessage extends IMessage = IMessage
-> extends React.Component<AvatarProps<TMessage>> {
+> extends React.PureComponent<AvatarProps<TMessage>> {
   static defaultProps = {
     renderAvatarOnTop: false,
     showAvatarForEveryMessage: false,

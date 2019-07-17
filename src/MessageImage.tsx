@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import {
   Image,
   StyleSheet,
@@ -39,7 +39,7 @@ export interface MessageImageProps<TMessage extends IMessage> {
 
 export default class MessageImage<
   TMessage extends IMessage = IMessage
-> extends Component<MessageImageProps<TMessage>> {
+> extends React.PureComponent<MessageImageProps<TMessage>> {
   static defaultProps = {
     currentMessage: {
       image: null,

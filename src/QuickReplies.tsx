@@ -75,7 +75,7 @@ export default class QuickReplies extends Component<
   }
 
   static propTypes = {
-    currentMessage: PropTypes.object.isRequired,
+    currentMessage: PropTypes.object,
     onQuickReply: PropTypes.func,
     color: PropTypes.string,
   }

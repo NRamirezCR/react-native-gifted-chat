@@ -15,7 +15,7 @@ export interface MessageVideoProps<TMessage extends IMessage> {
 
 export default class MessageVideo<
   TMessage extends IMessage = IMessage
-> extends React.Component<MessageVideoProps<TMessage>> {
+> extends React.PureComponent<MessageVideoProps<TMessage>> {
   static defaultProps = {
     currentMessage: {
       video: null,

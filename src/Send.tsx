@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import {
   StyleSheet,
   Text,
@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
   },
 })
 
+export interface MessageTxt {
+  text: string
+}
+
 export interface SendProps {
   text?: string
   label?: string
@@ -36,10 +40,10 @@ export interface SendProps {
   children?: React.ReactNode
   alwaysShowSend?: boolean
   disabled?: boolean
-  onSend?({ text }: { text: string }, b: boolean): void
+  onSend?(messages: MessageTxt | MessageTxt[], b: boolean): void
 }
 
-export default class Send extends Component<SendProps> {
+export default class Send extends React.PureComponent<SendProps> {
   static defaultProps = {
     text: '',
     onSend: () => {},

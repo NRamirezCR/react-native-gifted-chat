@@ -10,9 +10,9 @@ import {
   ViewStyle,
 } from 'react-native'
 
-import Composer from './Composer'
-import Send from './Send'
-import Actions from './Actions'
+import Composer, { ComposerProps } from './Composer'
+import Send, { SendProps } from './Send'
+import Actions, { ActionsProps } from './Actions'
 import Color from './Color'
 
 const styles = StyleSheet.create({
@@ -34,8 +34,9 @@ const styles = StyleSheet.create({
 })
 
 export interface InputToolbarProps {
-  options?: { [key: string]: any }
-  optionTintColor?: string
+  actionsProps?: Partial<ActionsProps>,
+  composerProps?: Partial<ComposerProps>,
+  sendProps?: Partial<SendProps>,
   containerStyle?: StyleProp<ViewStyle>
   primaryStyle?: StyleProp<ViewStyle>
   accessoryStyle?: StyleProp<ViewStyle>
@@ -43,7 +44,6 @@ export interface InputToolbarProps {
   renderActions?(props: Actions['props']): React.ReactNode
   renderSend?(props: Send['props']): React.ReactNode
   renderComposer?(props: Composer['props']): React.ReactNode
-  onPressActionButton?(): void
 }
 
 export default class InputToolbar extends React.Component<
@@ -58,15 +58,16 @@ export default class InputToolbar extends React.Component<
     containerStyle: {},
     primaryStyle: {},
     accessoryStyle: {},
-    onPressActionButton: () => {},
   }
 
   static propTypes = {
+    actionsProps: PropTypes.shape(Actions.propTypes),
+    composerProps: PropTypes.shape(Composer.propTypes),
+    sendProps: PropTypes.shape(Send.propTypes),
     renderAccessory: PropTypes.func,
     renderActions: PropTypes.func,
     renderSend: PropTypes.func,
     renderComposer: PropTypes.func,
-    onPressActionButton: PropTypes.func,
     containerStyle: ViewPropTypes.style,
     primaryStyle: ViewPropTypes.style,
     accessoryStyle: ViewPropTypes.style,
@@ -116,28 +117,30 @@ export default class InputToolbar extends React.Component<
   }
 
   renderActions() {
-    const { containerStyle, ...props } = this.props
-    if (this.props.renderActions) {
-      return this.props.renderActions(props)
-    } else if (this.props.onPressActionButton) {
-      return <Actions {...props} />
+    const { actionsProps } = this.props
+    if (this.props.renderActions && actionsProps) {
+      return this.props.renderActions(actionsProps)
+    } else if (actionsProps && actionsProps.onPressActionButton) {
+      return <Actions {...actionsProps} />
     }
     return null
   }
 
   renderSend() {
-    if (this.props.renderSend) {
-      return this.props.renderSend(this.props)
+    const { sendProps } = this.props
+    if (this.props.renderSend && sendProps) {
+      return this.props.renderSend(sendProps)
     }
-    return <Send {...this.props} />
+    return <Send {...sendProps} />
   }
 
   renderComposer() {
-    if (this.props.renderComposer) {
-      return this.props.renderComposer(this.props)
+    const { composerProps } = this.props
+    if (this.props.renderComposer && composerProps) {
+      return this.props.renderComposer(composerProps)
     }
 
-    return <Composer {...this.props} />
+    return <Composer {...composerProps} />
   }
 
   renderAccessory() {

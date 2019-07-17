@@ -54,7 +54,7 @@ export interface LoadEarlierProps {
   onLoadEarlier?(): void
 }
 
-export default class LoadEarlier extends React.Component<LoadEarlierProps> {
+export default class LoadEarlier extends React.PureComponent<LoadEarlierProps> {
   static defaultProps = {
     onLoadEarlier: () => {},
     isLoadingEarlier: false,

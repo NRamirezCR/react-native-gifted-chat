@@ -116,6 +116,7 @@ export type RenderMessageTextProps<TMessage extends IMessage> = Omit<
   MessageText['props']
 
 export interface BubbleProps<TMessage extends IMessage> {
+  quickRepliesProps?: QuickReplies["props"]
   user?: User
   touchableProps?: object
   renderUsernameOnMessage?: boolean
@@ -152,7 +153,7 @@ export interface BubbleProps<TMessage extends IMessage> {
 
 export default class Bubble<
   TMessage extends IMessage = IMessage
-> extends React.Component<BubbleProps<TMessage>> {
+> extends React.PureComponent<BubbleProps<TMessage>> {
   static contextTypes = {
     actionSheet: PropTypes.func,
   }
@@ -188,7 +189,8 @@ export default class Bubble<
   }
 
   static propTypes = {
-    user: PropTypes.object.isRequired,
+    quickRepliesProps: PropTypes.shape(QuickReplies.propTypes),
+    user: PropTypes.object,
     touchableProps: PropTypes.object,
     onLongPress: PropTypes.func,
     renderMessageImage: PropTypes.func,
@@ -307,26 +309,23 @@ export default class Bubble<
   renderQuickReplies() {
     const {
       currentMessage,
-      onQuickReply,
       nextMessage,
-      renderQuickReplySend,
-      quickReplyStyle,
+      quickRepliesProps
     } = this.props
+
     if (currentMessage && currentMessage.quickReplies) {
-      const { containerStyle, wrapperStyle, ...quickReplyProps } = this.props
+      const quickReplyProps = {
+        currentMessage,
+        nextMessage,
+        ...quickRepliesProps
+      }
+
       if (this.props.renderQuickReplies) {
         return this.props.renderQuickReplies(quickReplyProps)
       }
+
       return (
-        <QuickReplies
-          {...{
-            currentMessage,
-            onQuickReply,
-            nextMessage,
-            renderQuickReplySend,
-            quickReplyStyle,
-          }}
-        />
+        <QuickReplies {...quickReplyProps} />
       )
     }
     return null

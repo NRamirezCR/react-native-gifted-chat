@@ -32,13 +32,17 @@ const styles = {
 }
 
 export interface MessageProps<TMessage extends IMessage> {
+  bubbleProps?: Bubble["props"]
+  dayProps?: Day["props"]
+  systemMessageProps?: SystemMessage["props"]
+  avatarProps?: Avatar["props"]
   key: any
   showUserAvatar?: boolean
   position: 'left' | 'right'
   currentMessage?: TMessage
   nextMessage?: TMessage
   previousMessage?: TMessage
-  user: User
+  user?: User
   inverted?: boolean
   containerStyle?: LeftRightStyle<ViewStyle>
   renderBubble?(props: Bubble['props']): React.ReactNode
@@ -68,6 +72,10 @@ export default class Message<
   }
 
   static propTypes = {
+    avatarProps: PropTypes.shape(Avatar.propTypes),
+    bubbleProps: PropTypes.shape(Bubble.propTypes),
+    dayProps: PropTypes.shape(Day.propTypes),
+    systemMessageProps: PropTypes.shape(SystemMessage.propTypes),
     renderAvatar: PropTypes.func,
     showUserAvatar: PropTypes.bool,
     renderBubble: PropTypes.func,
@@ -111,31 +119,66 @@ export default class Message<
   }
 
   renderDay() {
-    if (this.props.currentMessage && this.props.currentMessage.createdAt) {
-      const { containerStyle, ...props } = this.props
-      if (this.props.renderDay) {
-        return this.props.renderDay(props)
+    const { currentMessage } = this.props
+
+    if (currentMessage && currentMessage.createdAt) {
+      const { dayProps, nextMessage, previousMessage, inverted } = this.props
+      const mergedProps: Day["props"] = {
+        currentMessage,
+        nextMessage,
+        previousMessage,
+        inverted,
+        ...dayProps
       }
-      return <Day {...props} />
+
+      if (this.props.renderDay) {
+        return this.props.renderDay(mergedProps)
+      }
+
+      return <Day {...mergedProps} />
     }
+
     return null
   }
 
   renderBubble() {
-    const { containerStyle, ...props } = this.props
-    if (this.props.renderBubble) {
-      return this.props.renderBubble(props)
+    const {
+      position,
+      currentMessage,
+      previousMessage,
+      nextMessage,
+      bubbleProps,
+    } = this.props
+
+    const mergedProps: Bubble["props"] = {
+      position,
+      currentMessage,
+      previousMessage,
+      nextMessage,
+      ...bubbleProps
     }
-    return <Bubble {...props} />
+
+    if (this.props.renderBubble) {
+      return this.props.renderBubble(mergedProps)
+    }
+
+    return (
+      <Bubble {...mergedProps} />
+    )
   }
 
   renderSystemMessage() {
-    const { containerStyle, ...props } = this.props
+    const { currentMessage, systemMessageProps } = this.props
+    const mergedProps: SystemMessage["props"] = {
+      currentMessage,
+      ...systemMessageProps
+    }
 
     if (this.props.renderSystemMessage) {
-      return this.props.renderSystemMessage(props)
+      return this.props.renderSystemMessage(mergedProps)
     }
-    return <SystemMessage {...props} />
+
+    return <SystemMessage {...mergedProps} />
   }
 
   renderAvatar() {
@@ -155,12 +198,28 @@ export default class Message<
       return null
     }
 
-    const { containerStyle, ...props } = this.props
-    return <Avatar {...props} />
+    const {
+      position,
+      previousMessage,
+      nextMessage,
+      avatarProps
+    } = this.props
+
+    const mergedProps: Avatar["props"] = {
+      position,
+      previousMessage,
+      nextMessage,
+      ...avatarProps
+    }
+
+    return (
+      <Avatar {...mergedProps} />
+    )
   }
 
   render() {
     const { currentMessage, nextMessage, position, containerStyle } = this.props
+
     if (currentMessage) {
       const sameUser = isSameUser(currentMessage, nextMessage!)
       return (

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import {
   StyleSheet,
   Text,
@@ -58,7 +58,7 @@ export interface TimeProps<TMessage extends IMessage> {
 
 export default class Time<
   TMessage extends IMessage = IMessage
-> extends Component<TimeProps<TMessage>> {
+> extends React.PureComponent<TimeProps<TMessage>> {
   static contextTypes = {
     getLocale: PropTypes.func,
   }
